@@ -1,0 +1,31 @@
+﻿@{
+    ViewBag.Title = "Get Page";
+}
+<input id="url" onfocus="this.select()" tabindex="1" />
+<input type ="hidden" id="encoding" value="UTF-8"/>
+<input type="button" value="Get" onclick="getPage()" />
+<span id="status"></span>
+<div id="content"></div>
+<input type="button" value="Go To Top" onclick="javascript:scroll(0,0);"/>
+
+<script type="text/javascript">
+    document.getElementById("url").focus();
+    document.getElementById("url").onkeypress = function (e) {
+        if (e.keyCode == 13) getPage();
+    }
+
+    function getPage() {
+        setHtml("status", "Getting...");
+        setHtml("content", null);
+
+        var url = "/Search/GetPage";
+        var param = "url=" + getValue("url") + "&encoding=" + getValue("encoding");
+
+        function callBack(data) {
+            setHtml("content", data);
+            setHtml("status", "Done");
+        }
+
+        ajaxPost(url, param, callBack);
+    }
+</script>

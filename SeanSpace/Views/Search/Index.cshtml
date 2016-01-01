@@ -1,0 +1,39 @@
+﻿@{
+    ViewBag.Title = "Search";
+}
+
+<input id="text" onfocus="this.select()" />
+<input type="button" value="Search" onclick="search(currentPage=1)" />
+<span id="status"></span>
+<div id="content"></div>
+<span>Current Page</span>
+<span id="currentPage"></span>
+<input type="button" value="Next" onclick="search(++currentPage)" />
+
+<script type="text/javascript">
+    var currentPage = 1;
+    document.getElementById("text").focus();
+    document.getElementById("text").onkeypress = function (e) {
+        if (e.keyCode == 13) search(currentPage=1);
+    }
+
+    function search(pageNum) {
+        setHtml("status", "Searching...");
+        setHtml("content", null);
+        setHtml("currentPage", pageNum);
+
+        var searchUrl = "/Search/Search";
+        var param = "q=" + getValue("text") + "&start=" + pageNum;
+
+        function callBack(data) {
+            setHtml("content", data);
+            setHtml("status", "Done");
+        }
+
+        ajaxPost(searchUrl, param, callBack);
+    }
+</script>
+<style type="text/css">
+	li { list-style-type: none; font-family: Arial; }
+	.r { margin-bottom:0; font-weight:normal;}
+</style>

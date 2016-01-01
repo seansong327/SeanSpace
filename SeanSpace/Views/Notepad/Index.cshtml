@@ -1,0 +1,163 @@
+﻿@{
+    ViewBag.Title = "Notepad";
+}
+@model List<SeanSpace.Models.Notepad>
+
+<div id="hideBG">
+    <div id="dialgoBlock">
+        <input id="CurrentSid" type="hidden" value="0" />
+        <div>
+            <label for="Title">Title</label>
+            <input id="Title" type="text" style="width:300px;" />
+        </div>
+        <div>
+            <label for="Content">Content</label>
+            <textarea id="Content" cols="40" rows="10" style="vertical-align:top;"></textarea>
+        </div>
+        <div>
+            <input id="Action" type="button" value="Add" onclick="addOrUpdateNote()" />
+            <input id="Cancel" type="button" value="Cancel" onclick="hide('hideBG')" />
+        </div>
+    </div>
+</div>
+
+<input id="ShowAdd" type="button" value="Add" onclick="showAddPage()" />
+<table class="gridtable">
+        <tr>
+            <th style="width:15%">Action</th>
+            <th style="width:15%">Title</th>
+            <th style="width:50%">Content</th>
+            <th style="width:20%">Modified Date</th>
+        </tr>
+    @foreach (var note in Model)
+    {
+        <tr id="tr@(note.Sid)">
+            <td style="white-space:initial; text-align:center;">
+                <input type="button" value="Delete" onclick="deleteNote(@note.Sid)" />
+                <input type="button" value="Update" onclick="showUpdatePage(@note.Sid)" />
+                <input type="hidden" class="titleValue" value="@note.Title" />
+                <input type="hidden" class="contentValue" value="@note.Content" />
+            </td>
+            <td><div class="titleContainer"></div></td>
+            <td><div class="contentContainer"></div></td>
+            <td title="@note.ModifiedDate">@note.ModifiedDate</td>
+        </tr>
+    }
+</table>
+    
+<script type="text/javascript">
+    var trs = document.getElementsByTagName("tr");
+    for (var i = 1; i < trs.length; i++) {
+        trs[i].getElementsByClassName("titleContainer")[0].innerText = trs[i].getElementsByClassName("titleValue")[0].value;
+        trs[i].getElementsByClassName("contentContainer")[0].innerText = trs[i].getElementsByClassName("contentValue")[0].value;
+    }
+
+    function deleteNote(sid) {
+        if (confirm("Delete this note?")) {
+            var url = "/Notepad/Delete";
+            var param = "sid=" + sid;
+
+            ajaxPost(url, param, reload);
+        }
+    }
+
+    function showAddPage() {
+        setValue("Action", "Add");
+        showBlock("hideBG");
+
+        setValue("CurrentSid", 0);
+        setValue("Title", null);
+        setValue("Content", null);
+    }
+
+    function showUpdatePage(sid) {
+        setValue("Action", "Update");
+        showBlock("hideBG");
+        
+        setValue("CurrentSid", sid);
+
+        var tds = document.getElementById("tr"+sid).getElementsByTagName("td");
+        setValue("Title", tds[0].getElementsByClassName("titleValue")[0].value);
+        setValue("Content", tds[0].getElementsByClassName("contentValue")[0].value);
+    }
+
+    function addOrUpdateNote(){
+        var url = "/Notepad/AddOrUpdate";
+        var param = "sid=" + getValue("CurrentSid") + "&title=" + getValue("Title") + "&content=" + getValue("Content");
+
+        ajaxPost(url, param, reload);
+    }
+        
+    function reload() {
+        window.location.reload();
+    }
+</script>
+
+<style type="text/css">
+	label {
+        display:inline-block;
+        width:80px;
+	}
+
+	div {
+	    text-align:center;
+    }
+
+    input {
+        margin: 8px 0;
+    }
+
+    table.gridtable {
+	    font-family: verdana,arial,sans-serif;
+	    font-size:11px;
+	    color:#333333;
+	    border: 1px solid #666666;
+	    border-collapse: collapse;
+        table-layout:fixed;
+        width:100%;
+    }
+    table.gridtable th {
+	    border: 1px solid #666666;
+	    padding: 8px;
+	    background-color: #dedede;
+    }
+    table.gridtable td {
+	    border-width: 1px;
+	    border-style: solid;
+	    border-color: #666666;
+	    background-color: #ffffff;
+    }
+    table.gridtable td input {
+        margin:0;
+    }
+
+	#hideBG {
+	    position:absolute;
+        top:0;
+        left:0;
+        width:100%;
+        height:100%;
+        filter:alpha(opacity=50); /* IE */ -moz-opacity:1.0; /* Moz + FF */
+        background: rgba(80, 80, 80, 0.6);
+        z-index:99;
+        display: none;
+    }
+
+	#dialgoBlock {
+	    margin-top:10%;
+        display: inline-block;
+        padding: 10px;
+        background-color: beige;
+    }
+
+    .contentContainer, .titleContainer {
+        padding: 8px;
+        height:20px;
+        text-align:left;
+        
+        white-space:nowrap;
+        overflow:hidden;
+        text-overflow:ellipsis;
+    }
+</style>
+

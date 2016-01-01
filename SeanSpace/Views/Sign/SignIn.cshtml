@@ -1,0 +1,18 @@
+﻿@{
+    ViewBag.Title = "Sign In";
+}
+
+<form method="post" action="/Sign/SignIn"> 
+    <div>
+        <label for="userName">Name</label>
+        <input name="userName" type="text"/>
+    </div>
+    <div>
+        <label for="Password">Password</label>
+        <input name="password" type="password" />
+    </div>
+    <input type="submit" value="Sign In" />
+</form>
+<style type="text/css">
+	label { display:inline-block; width:80px; }
+</style>
